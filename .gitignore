@@ -1,0 +1,12 @@
+*.example
+*.gch
+*.tab.*
+*.output
+*.o
+*.yy.*
+*.out
+testlex
+parser
+unparser
+testtable
+nameanalysis

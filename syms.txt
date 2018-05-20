@@ -1,0 +1,30 @@
+c Integer and float literals
+1 2 1.3 +1 +2.5 -1 -3.2 4.5E+07 +302E-9
+
+c float ids
+APPLE APP13 BANANA DEF A58 X FORKLIFT HORSE OSPREY ZORP
+
+c int ids
+I J K L M N JEF I1I1I1I1 J2 JEANIE K0RN LIFT 
+
+c float arithmetic function ids
+COSF SINF TANF LOGF EXPF FROGF SQRTF P123F
+
+c int arithmetic function ids
+XTRAF XTREMEF XFFF
+
+c format literals
+c TODO
+
+c reserved symbols
+= CALL , COMMON CONTINUE DIMENSION DO END EQUIVALENCE FORMAT FUNCTION
+GO TO IF ( PAUSE PRINT READ RETURN ) STOP SUBPROCESS + - * / **
+
+c tags
+12345 
+   230
+   69 
+ 23   
+c continue statements
+   700X(1) = (-B + SQRTF(B**2 - 4*A*C))
+     1/(2*A)
