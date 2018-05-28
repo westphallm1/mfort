@@ -8,11 +8,19 @@ typedef enum { typeInt, typeFloat, typeIntFn, typeFloatFn, typeTag} type_t;
 typedef struct SymTableEntry {
     type_t type;
     int common; //which common value is it? or none
-    int dimensions[3]; //support up to 3d
-    int ndim;
-    int currdim; //counter for current dim, make sure the correct dimensions 
     int isfunc;
-    int nargs;
+    union {
+        int currdim;//counter for current dim, make sure dims are correct
+        int currarg;//counter for current arg, make sure args are correct
+    };
+    union {
+        int ndim;
+        int nargs;
+    };
+    union {
+        int dimensions[3]; //support up to 3d
+        type_t argtypes[99]; //support up to 99 args
+    };
     char * key;
     struct SymTableEntry * next; //for symtable
     struct SymTableEntry * equiv; //for aliasing

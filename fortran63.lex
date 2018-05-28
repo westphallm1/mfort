@@ -7,6 +7,8 @@ char yycharno = 1;
 
 #define movepos() yycharno+=yyleng;
 #define newline() yycharno = 1; yylineno += 1;
+#define yysPtr() yylval.sPtr = malloc(yyleng+1);strcpy(yylval.sPtr,yytext);
+
 
 int atotag(char * a){
     return -1;
@@ -52,25 +54,25 @@ NOTF [A-EG-Z0-9]
 
 {INTSTART}({IDCHAR}{0,2}|{IDCHAR}{2,}{NOTF}) {
             movepos();
-            yylval.sPtr = yytext;
+            yysPtr();
             return INTID;
         }
 
 {FLOATSTART}({IDCHAR}{0,2}|{IDCHAR}{2,}{NOTF}) {
             movepos();
-            yylval.sPtr = yytext;
+            yysPtr();
             return FLOATID;
         }
 
 {INTFNSTART}{IDCHAR}{2,}"F" {
             movepos();
-            yylval.sPtr = yytext;
+            yysPtr();
             return INTFNID;
         }
 
 {FLOATFNSTART}{IDCHAR}{2,}"F" {
             movepos();
-            yylval.sPtr = yytext;
+            yysPtr();
             return INTFNID;
         }
 
@@ -106,29 +108,30 @@ NOTF [A-EG-Z0-9]
 
 [0-9]*"I"[0-9]+ {
             movepos();
-            yylval.sPtr = yytext;
+            yysPtr();
             return INTFMTLIT;
         }
 
 [0-9]*"H" {
             movepos();
-            yylval.sPtr = yytext;
+            yysPtr();
             return HOLFMTLIT;
         }
 
 [0-9]*"F"[0-9]+"."[0-9]+ {
             movepos();
-            yylval.sPtr = yytext;
+            yysPtr();
             return FLOATFMTLIT;
         }
 
 [0-9]*"E"[0-9]+"."[0-9]+ {
             movepos();
-            yylval.sPtr = yytext;
+            yysPtr();
             return EXPFMTLIT;
         }
 
-\n"     "[^0 ] {newline();}
+\n"     "[^0 ] {yylineno+=1;yycharno=yyleng-1;}
+"c"[^\n]*\n    {newline()}
 
 " "  {movepos();}
 .    {movepos(); yyerror("Unrecognized character");}

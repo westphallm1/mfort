@@ -16,7 +16,21 @@ unsigned long hash(unsigned char *str) {
 }
 
 void printSym(sym * s){
-    printf("  %s\n",s->key);
+    printf("  %s",s->key);
+    if(s->isfunc){
+        printf(" (%d args)",s->nargs);
+    }else if(s->ndim > 0) {
+        printf(" (");
+        for(int i = 0; i < s->ndim;printf("%d ",s->dimensions[i++]));
+        printf(")");
+    }
+    if(s->common > -1){
+        printf(" (common%d)", s->common);
+    }
+    if(s->equiv != NULL){
+        printf(" ( = %s)",s->equiv->key);
+    }
+    printf("\n");
 }
 
 void printTable(symTable * table){
@@ -49,17 +63,16 @@ symTable * newSymTable(int size){
 void addScope(symTable *table){
     table->nscopes++;
     table->scopes[table->nscopes] = calloc(table->scope_size,sizeof(sym **));
-};
+}
 
 void removeScope(symTable *table){
     //keep symbols in tact, only remove the table itself
     free(table->scopes[table->nscopes]);
     table->nscopes--;
-};
+}
 
 
 sym * addLocal(symTable *table, char * key){
-
     sym * new_sym = malloc(sizeof(sym));
     //set default features, let the caller change appropriately
     new_sym -> ndim = 0;
@@ -96,6 +109,5 @@ sym * getLocal(symTable *table, char * key){
         else
             return NULL;
     }
-
 }
 

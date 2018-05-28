@@ -1,11 +1,15 @@
+/* Figure out the number of dimensions of dimensioned variables and number of
+ * arguments to functions. Assign Common values to Common variables and set
+ * equivalences
+ */
 #include "fortran63.h"
 #include "fortran63.tab.h" 
 #include "symtable.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef enum{noAction, setDims, checkDims, setArgs, checkArgs, setCommon,
-             setEquiv} action_t;
+typedef enum{addSyms, setDims, checkDims, setArgs, setCommon,
+             setEquiv,setExternArgs} action_t;
 /* Macros for common access chains */
 #define child(idx) node->opr.op[idx]
 #define hasChild(idx) node->opr.op[idx]!=NULL
@@ -147,7 +151,8 @@ sym * intlit_(nodeType * node, action_t act, sym * curr){
             break;
         case checkDims:
             break;
-        case checkArgs:
+        case setExternArgs:
+            curr->argtypes[curr->nargs++] = typeFloat; //autocast
             break;
     }
     return NULL;
@@ -160,7 +165,8 @@ sym * floatlit_(nodeType * node, action_t act, sym * curr){
         case checkDims:
             error(node,"Dimension access must be int literal or int id");
             break;
-        case checkArgs:
+        case setExternArgs:
+            curr->argtypes[curr->nargs++] = typeFloat;
             break;
     }
     return NULL;
@@ -178,18 +184,35 @@ sym * tag_(nodeType * node, action_t act, sym * curr){
             curr = addLocal(TABLE,key);
             curr -> type = typeTag;
         }
-        
     }
     return curr;
 }
 sym * intid_(nodeType * node, action_t act, sym * curr){
+    sym * equiv = NULL;
+    switch(act){
+        case setDims:
+            error(node,"Dimensions must be int literals");
+            break;
+        case setArgs:
+        case setExternArgs:
+            curr->argtypes[curr->nargs++] = typeInt;
+            break;
+        case setEquiv:
+            equiv = curr;
+            break;
+    }
     if((curr = getLocal(TABLE,nodeName())) == NULL){
         curr = addLocal(TABLE,nodeName());
         curr -> type = typeInt;
     }
+    if(equiv != NULL)
+        curr -> equiv = equiv;
+    if(act == setCommon)
+        curr->common=COMMON_COUNT++;
     return curr;
 }
 sym * floatid_(nodeType * node, action_t act, sym * curr){
+    sym * equiv = NULL;
     switch(act){
         case setDims:
             error(node,"Dimensions must be int literals");
@@ -197,13 +220,22 @@ sym * floatid_(nodeType * node, action_t act, sym * curr){
         case checkDims:
             error(node,"Dimension access must be int literal or int id");
             break;
-        case checkArgs:
+        case setArgs:
+        case setExternArgs:
+            curr->argtypes[curr->nargs++] = typeFloat;
+            break;
+        case setEquiv:
+            equiv = curr;
             break;
     }
     if((curr = getLocal(TABLE,nodeName())) == NULL){
         curr = addLocal(TABLE,nodeName());
         curr -> type = typeFloat;
     }
+    if(equiv != NULL)
+        curr -> equiv = equiv;
+    if(act == setCommon)
+        curr->common=++COMMON_COUNT;
     return curr;
 }
 sym * intfnid_(nodeType * node, action_t act, sym * curr){
@@ -214,13 +246,14 @@ sym * intfnid_(nodeType * node, action_t act, sym * curr){
         case checkDims:
             error(node,"Dimension access must be int literal or int id");
             break;
-        case checkArgs:
-            error(node,"Arguments can't be function names");
+        case setExternArgs:
+            curr->argtypes[curr->nargs++] = typeInt; //autocast
             break;
     }
     if((curr = getLocal(TABLE,nodeName())) == NULL){
         curr = addLocal(TABLE,nodeName());
         curr -> type = typeIntFn;
+        curr -> isfunc = 1;
     }
     return curr;
 }
@@ -232,13 +265,14 @@ sym * floatfnid_(nodeType * node, action_t act, sym * curr){
         case checkDims:
             error(node,"Dimension access must be int literal or int id");
             break;
-        case checkArgs:
-            error(node,"Arguments can't be function names");
+        case setExternArgs:
+            curr->argtypes[curr->nargs++] = typeFloat; //autocast
             break;
     }
     if((curr = getLocal(TABLE,nodeName())) == NULL){
         curr = addLocal(TABLE,nodeName());
         curr -> type = typeFloatFn;
+        curr -> isfunc = 1;
     }
     return curr;
 }
@@ -249,9 +283,6 @@ sym * floatfmtlit_(nodeType * node, action_t act, sym * curr){
             break;
         case checkDims:
             error(node,"Dimension access must be int literal or int id");
-            break;
-        case checkArgs:
-            error(node,"Arguments can't be function names");
             break;
     }
     return NULL;
@@ -264,9 +295,6 @@ sym * expfmtlit_(nodeType * node, action_t act, sym * curr){
         case checkDims:
             error(node,"Dimension access must be int literal or int id");
             break;
-        case checkArgs:
-            error(node,"Arguments can't be function names");
-            break;
     }
     return NULL;
 }
@@ -278,9 +306,6 @@ sym * intfmtlit_(nodeType * node, action_t act, sym * curr){
         case checkDims:
             error(node,"Dimension access must be int literal or int id");
             break;
-        case checkArgs:
-            error(node,"Arguments can't be function names");
-            break;
     }
     return NULL;
 }
@@ -291,9 +316,6 @@ sym * holfmtlit_(nodeType * node, action_t act, sym * curr){
             break;
         case checkDims:
             error(node,"Dimension access must be int literal or int id");
-            break;
-        case checkArgs:
-            error(node,"Arguments can't be function names");
             break;
     }
     return NULL;
@@ -340,6 +362,7 @@ sym * end_(nodeType * node, action_t act, sym * curr){
 }
 sym * equivalence_(nodeType * node, action_t act, sym * curr){
     act = setEquiv;
+    curr = NULL;
     if(hasChild(0))callChild(0);
     return NULL;
 }
@@ -504,15 +527,14 @@ sym * stmtlist_(nodeType * node, action_t act, sym * curr){
     return NULL;
 }
 sym * fnassign_(nodeType * node, action_t act, sym * curr){
-    act = noAction;
+    act = addSyms;
     if(hasChild(0)) curr = callChild(0);
     curr -> nargs = 0;
     act = setArgs;
     addScope(TABLE);
     if(hasChild(1)) callChild(1);
-    act = noAction;
+    act = addSyms;
     if(hasChild(2)) callChild(2);
-    printTable(TABLE);
     removeScope(TABLE);
     return NULL;
 }
@@ -525,17 +547,20 @@ sym * fncall_(nodeType * node, action_t act, sym * curr){
 }
 sym * indexed_(nodeType * node, action_t act, sym * curr){
     action_t tmp = act;
-    act = noAction;
+    act = addSyms;
     if(hasChild(0)) curr = callChild(0);
     act = tmp;
     if(act != setDims){ //dimSetting is a given, otherwise figure it out
-        if(curr->ndim > 0){
+        if(curr->ndim > 0 && !curr->isfunc){
             act = checkDims;
             curr->currdim = 1;
-        }else{
-            //it's treated as a function
+        }else if(curr->isfunc){
+            //check args in typechecking
+            return curr;
+        } else {
+            //it's treated as a function, assume it's defined elsewhere
             curr->isfunc = 1;
-            act = checkArgs;
+            act = setExternArgs;
         }
     }
     if(hasChild(1)) callChild(1);
@@ -548,7 +573,13 @@ sym * indexed_(nodeType * node, action_t act, sym * curr){
     return NULL;
 }
 sym * formallist_(nodeType * node, action_t act, sym * curr){
-    if(hasChild(0)) callChild(0);
+    if(act == setEquiv && curr == NULL){
+        act = addSyms;
+        curr = callChild(0);
+        act = setEquiv;
+    } else {
+        callChild(0);
+    }
     if(hasChild(1)) callChild(1);
     return NULL;
 }
@@ -598,7 +629,7 @@ sym * program_(nodeType * node, action_t act, sym * curr){
 
 void nameanalysis(){
     TABLE = newSymTable(113);
-    program_(yyrootptr,noAction,NULL);
+    program_(yyrootptr,addSyms,NULL);
     printTable(TABLE);
 }
 
