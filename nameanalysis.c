@@ -138,6 +138,8 @@ sym * (*jmptable[])(nodeType *,action_t,sym *) = {
 };
 
 void error(nodeType * node, char * msg){
+    while(node->lineno == -1)
+        node = child(0);
     printf("Line %d, char %d: %s\n",node->lineno,node->charno,msg);
     FOUND_ERROR = 1;
 }
@@ -630,10 +632,4 @@ sym * program_(nodeType * node, action_t act, sym * curr){
 void nameanalysis(){
     TABLE = newSymTable(113);
     program_(yyrootptr,addSyms,NULL);
-    printTable(TABLE);
-}
-
-int main(){
-    yyparse(); 
-    nameanalysis();
 }

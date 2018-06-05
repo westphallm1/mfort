@@ -6,20 +6,20 @@
 #include "fortran63.h" 
 /* prototypes */ 
 nodeType *opr(int oper, int nops, ...); 
-nodeType *id(char * s, int type); 
-nodeType *intCon(int value); 
-nodeType *floatCon(float value); 
-nodeType *tagCon(int value); 
+nodeType *id(struct LeafNode value, int type); 
+nodeType *intCon(struct LeafNode value); 
+nodeType *floatCon(struct LeafNode value); 
+nodeType *tagCon(struct LeafNode value); 
 
-#define intId(x) id(x, INTID)
-#define floatId(x) id(x, FLOATID)
-#define intFnId(x) id(x, INTFNID)
-#define floatFnId(x) id(x, FLOATFNID)
+#define INT_ID(x) id(x, INTID)
+#define FLOAT_ID(x) id(x, FLOATID)
+#define INT_FN_ID(x) id(x, INTFNID)
+#define FLOAT_FN_ID(x) id(x, FLOATFNID)
 #define intFmtId(x) id(x, INTFMTLIT)
 #define floatFmtId(x) id(x, FLOATFMTLIT)
 #define expFmtId(x) id(x, EXPFMTLIT)
 #define holFmtId(x) id(x, HOLFMTLIT)
-#define setLocation() p->lineno == yylineno; p->charno = yycharno;
+#define setLocation() p->lineno = value.lineno; p->charno = value.charno;
 
 void freeNode(nodeType *p); 
 int yylex(void); 
@@ -31,23 +31,21 @@ nodeType * yyrootptr;
 
 %} 
 %union { 
-    int iValue;                 /* integer value */ 
-    float fValue;               /* integer value */ 
-    char * sPtr;                /* symbol table key */ 
+    struct LeafNode leafNode;
     nodeType *nPtr;             /* node pointer */ 
 }; 
 %define parse.error verbose
-%token <iValue> INTLIT
-%token <fValue> FLOATLIT
-%token <iValue> TAG
-%token <sPtr> INTID
-%token <sPtr> FLOATID
-%token <sPtr> INTFNID
-%token <sPtr> FLOATFNID
-%token <sPtr> FLOATFMTLIT
-%token <sPtr> EXPFMTLIT
-%token <sPtr> INTFMTLIT
-%token <sPtr> HOLFMTLIT
+%token <leafNode> INTLIT
+%token <leafNode> FLOATLIT
+%token <leafNode> TAG
+%token <leafNode> INTID
+%token <leafNode> FLOATID
+%token <leafNode> INTFNID
+%token <leafNode> FLOATFNID
+%token <leafNode> FLOATFMTLIT
+%token <leafNode> EXPFMTLIT
+%token <leafNode> INTFMTLIT
+%token <leafNode> HOLFMTLIT
 %token ASSIGN CALL COMMA COMMON CONTINUE DIMENSION DO END 
 %token EQUIVALENCE FORMAT FUNCTION GOTO 
 %token IF LPAREN NEWLINE PAUSE PRINT READ RETURN RPAREN STOP SUBPROCESS
@@ -136,14 +134,14 @@ gotoStmt:
 
 varGotoStmt:
     GOTO LPAREN labelList RPAREN COMMA INTID { 
-            $$ = opr(GOTO, 2, $3, intId($6)); }
+            $$ = opr(GOTO, 2, $3, INT_ID($6)); }
     ;
 
 doStmt:
     DO INTLIT INTID ASSIGN intVal COMMA intVal { 
-            $$ = opr(DO,5, tagCon($2), intId($3), $5, $7, NULL); }
+            $$ = opr(DO,5, tagCon($2), INT_ID($3), $5, $7, NULL); }
     | DO INTLIT INTID ASSIGN intVal COMMA intVal COMMA intVal {
-            $$ = opr(DO,5, tagCon($2), intId($3), $5, $7, $9); }
+            $$ = opr(DO,5, tagCon($2), INT_ID($3), $5, $7, $9); }
     ;
 
 fmtStmt:
@@ -222,7 +220,7 @@ fnCallExp:
     ;
 
 intVal:
-    INTID { $$ = intId($1); }
+    INTID { $$ = INT_ID($1); }
     | INTLIT { $$ = intCon($1); }
     ;
 
@@ -232,13 +230,13 @@ loc:
     ;
 
 id:
-    INTID { $$ = intId($1); }
-    | FLOATID { $$ = floatId($1); }
+    INTID { $$ = INT_ID($1); }
+    | FLOATID { $$ = FLOAT_ID($1); }
     ;
 
 fnId:
-    INTFNID { $$ = intFnId($1); }
-    | FLOATFNID { $$ = floatFnId($1); }
+    INTFNID { $$ = INT_FN_ID($1); }
+    | FLOATFNID { $$ = FLOAT_FN_ID($1); }
     ;
 
 fmt:
@@ -290,7 +288,7 @@ expList:
 %% 
 #define SIZEOF_NODETYPE ((char *)&p->con - (char *)p) 
 
-nodeType *intCon(int value) { 
+nodeType *intCon(struct LeafNode value) { 
     nodeType *p; 
     /* allocate node */ 
     if ((p = malloc(sizeof(nodeType))) == NULL) 
@@ -298,11 +296,11 @@ nodeType *intCon(int value) {
     /* copy information */ 
     setLocation();
     p->opr.oper = INTLIT; 
-    p->iVal.value = value; 
+    p->iVal.value = value.iVal; 
     return p; 
 } 
 
-nodeType *tagCon(int value) { 
+nodeType *tagCon(struct LeafNode value) { 
     nodeType *p; 
     /* allocate node */ 
     if ((p = malloc(sizeof(nodeType))) == NULL) 
@@ -310,11 +308,11 @@ nodeType *tagCon(int value) {
     /* copy information */ 
     setLocation();
     p->opr.oper = TAG; 
-    p->iVal.value = value; 
+    p->iVal.value = value.iVal; 
     return p; 
 } 
 
-nodeType *floatCon(float value) { 
+nodeType *floatCon(struct LeafNode value) { 
     nodeType *p; 
     /* allocate node */ 
     if ((p = malloc(sizeof(nodeType))) == NULL) 
@@ -322,11 +320,11 @@ nodeType *floatCon(float value) {
     /* copy information */ 
     setLocation();
     p->opr.oper = FLOATLIT; 
-    p->fVal.value = value; 
+    p->fVal.value = value.fVal; 
     return p; 
 } 
 
-nodeType *id(char * s,int type) { 
+nodeType *id(struct LeafNode value,int type) { 
     nodeType *p; 
     /* allocate node */ 
     if ((p = malloc(sizeof(nodeType))) == NULL) 
@@ -334,7 +332,7 @@ nodeType *id(char * s,int type) {
     /* copy information */ 
     setLocation();
     p->opr.oper = type; 
-    p->sVal.s = s; 
+    p->sVal.s = value.sPtr; 
     return p; 
 } 
 
@@ -348,7 +346,8 @@ nodeType *opr(int oper, int nops, ...) {
     if ((p -> opr.op = malloc(nops*sizeof(nodeType *))) == NULL) 
         yyerror("out of memory"); 
     /* copy information */ 
-    setLocation();
+    p->lineno = -1;
+    p->charno = -1;
     p->opr.oper = oper; 
     p->opr.nops = nops; 
     va_start(ap, nops); 

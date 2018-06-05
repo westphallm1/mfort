@@ -61,5 +61,14 @@ typedef struct nodeTypeTag {
     }; 
 } nodeType; 
 
+struct LeafNode {
+    int lineno;
+    int charno;
+    union {
+        int iVal;
+        float fVal;
+        char * sPtr;
+    };
+};
 
 #endif
