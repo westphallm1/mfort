@@ -1,6 +1,4 @@
-/* via http://epaperpress.com/lexandyacc/download/LexAndYaccTutorial.pdf
- * by Tom Niemann
- */
+#include <stdio.h>
 #ifndef fortran63_h
 #define fortran63_h
 typedef enum { typeInt, typeFloat, typeIntFn, typeFloatFn, typeTag} type_t; 
@@ -71,4 +69,7 @@ struct LeafNode {
     };
 };
 
+extern FILE * IN_FILE;
+void setInput(FILE * in);
+void printErrorLine(int lineno, int charno);
 #endif

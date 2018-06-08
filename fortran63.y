@@ -357,9 +357,22 @@ nodeType *opr(int oper, int nops, ...) {
     return p; 
 } 
 void freeNode(nodeType *p) { 
-} 
+}
+
+void printErrorLine(int lineno, int charno){
+    char buffer[1024];
+    fseek(IN_FILE,0,SEEK_SET);
+    for(int i=0;i<lineno;i++)
+        fgets(buffer,1024,IN_FILE);
+    printf("%s",buffer);
+    for(int i=1; i<charno;i++)
+        printf(" ");
+    printf("^~~~\n");
+}
+
 void yyerror(char *s) { 
-    fprintf(stdout, "Line %d char %d: %s\n", yylineno, yycharno, s); 
+    fprintf(stdout, "%d,%d: %s\n", yylineno, yycharno, s); 
+    printErrorLine(yylineno,yycharno);
     exit(1);
 } 
 

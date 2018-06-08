@@ -1,5 +1,7 @@
 %{
 #include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
 #include "fortran63.h"
 #include "fortran63.tab.h"
 void yyerror(char *);
@@ -15,6 +17,12 @@ char yycharno = 1;
 
 int atotag(char * a){
     return -1;
+}
+
+FILE * IN_FILE;
+void setInput(FILE * in){
+    yyin = in;
+    IN_FILE = fdopen (dup (fileno (in)), "r");
 }
 
 %}

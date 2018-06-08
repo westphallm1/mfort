@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 typedef enum{addSyms, setDims, checkDims, setArgs, setCommon,
-             setEquiv,setExternArgs} action_t;
+             setEquiv, setExternArgs} action_t;
 /* Macros for common access chains */
 #define child(idx) node->opr.op[idx]
 #define hasChild(idx) node->opr.op[idx]!=NULL
@@ -21,9 +21,7 @@ FILE * OUT;
 symTable * TABLE;
 int COMMON_COUNT = 0;
 int FOUND_ERROR = 0;
-char * DIM_ACCESS = 
-"Subscripts must be in the form of V, V+/-C, C*V, or C*V+/-C', where\
- C and C' are fixed point constants and V is a fixed point ID";
+char * DIM_ACCESS = "Invalid expression in subscript.";
 
 extern nodeType * yyrootptr;
 
@@ -140,7 +138,8 @@ sym * (*jmptable[])(nodeType *,action_t,sym *) = {
 void error(nodeType * node, char * msg){
     while(node->lineno == -1)
         node = child(0);
-    printf("Line %d, char %d: %s\n",node->lineno,node->charno,msg);
+    printf("%d,%d: %s\n",node->lineno,node->charno,msg);
+    printErrorLine(node->lineno,node->charno);
     FOUND_ERROR = 1;
 }
 
@@ -162,7 +161,7 @@ sym * intlit_(nodeType * node, action_t act, sym * curr){
 sym * floatlit_(nodeType * node, action_t act, sym * curr){
     switch(act){
         case setDims:
-            error(node,"Dimensions must be int literals");
+            error(node,"Dimension declarations must be int literals");
             break;
         case checkDims:
             error(node,"Dimension access must be int literal or int id");
@@ -193,7 +192,7 @@ sym * intid_(nodeType * node, action_t act, sym * curr){
     sym * equiv = NULL;
     switch(act){
         case setDims:
-            error(node,"Dimensions must be int literals");
+            error(node,"Dimension declarations must be int literals");
             break;
         case setArgs:
         case setExternArgs:
@@ -217,7 +216,7 @@ sym * floatid_(nodeType * node, action_t act, sym * curr){
     sym * equiv = NULL;
     switch(act){
         case setDims:
-            error(node,"Dimensions must be int literals");
+            error(node,"Dimension declarations must be int literals");
             break;
         case checkDims:
             error(node,"Dimension access must be int literal or int id");
@@ -243,7 +242,7 @@ sym * floatid_(nodeType * node, action_t act, sym * curr){
 sym * intfnid_(nodeType * node, action_t act, sym * curr){
     switch(act){
         case setDims:
-            error(node,"Dimensions must be int literals");
+            error(node,"Dimension declarations must be int literals");
             break;
         case checkDims:
             error(node,"Dimension access must be int literal or int id");
@@ -262,7 +261,7 @@ sym * intfnid_(nodeType * node, action_t act, sym * curr){
 sym * floatfnid_(nodeType * node, action_t act, sym * curr){
     switch(act){
         case setDims:
-            error(node,"Dimensions must be int literals");
+            error(node,"Dimension declarations must be int literals");
             break;
         case checkDims:
             error(node,"Dimension access must be int literal or int id");
@@ -281,7 +280,7 @@ sym * floatfnid_(nodeType * node, action_t act, sym * curr){
 sym * floatfmtlit_(nodeType * node, action_t act, sym * curr){
     switch(act){
         case setDims:
-            error(node,"Dimensions must be int literals");
+            error(node,"Dimension declarations must be int literals");
             break;
         case checkDims:
             error(node,"Dimension access must be int literal or int id");
@@ -292,7 +291,7 @@ sym * floatfmtlit_(nodeType * node, action_t act, sym * curr){
 sym * expfmtlit_(nodeType * node, action_t act, sym * curr){
     switch(act){
         case setDims:
-            error(node,"Dimensions must be int literals");
+            error(node,"Dimension declarations must be int literals");
             break;
         case checkDims:
             error(node,"Dimension access must be int literal or int id");
@@ -303,7 +302,7 @@ sym * expfmtlit_(nodeType * node, action_t act, sym * curr){
 sym * intfmtlit_(nodeType * node, action_t act, sym * curr){
     switch(act){
         case setDims:
-            error(node,"Dimensions must be int literals");
+            error(node,"Dimension declarations must be int literals");
             break;
         case checkDims:
             error(node,"Dimension access must be int literal or int id");
@@ -314,7 +313,7 @@ sym * intfmtlit_(nodeType * node, action_t act, sym * curr){
 sym * holfmtlit_(nodeType * node, action_t act, sym * curr){
     switch(act){
         case setDims:
-            error(node,"Dimensions must be int literals");
+            error(node,"Dimension declarations must be int literals");
             break;
         case checkDims:
             error(node,"Dimension access must be int literal or int id");
@@ -434,7 +433,7 @@ sym * subprocess_(nodeType * node, action_t act, sym * curr){
 sym * plus_(nodeType * node, action_t act, sym * curr){
     switch(act){
         case setDims:
-            error(node,"Dimensions must be int literals");
+            error(node,"Dimension declarations must be int literals");
             break;
         case checkDims:
             if((childOp(0) != TIMES && childOp(0) != INTID) || 
@@ -443,7 +442,6 @@ sym * plus_(nodeType * node, action_t act, sym * curr){
             break;
     }
     if(hasChild(0))callChild(0);
-    
     if(hasChild(1))callChild(1);
     
     return NULL;
@@ -451,7 +449,7 @@ sym * plus_(nodeType * node, action_t act, sym * curr){
 sym * minus_(nodeType * node, action_t act, sym * curr){
     switch(act){
         case setDims:
-            error(node,"Dimensions must be int literals");
+            error(node,"Dimension declarations must be int literals");
             break;
         case checkDims:
             if((childOp(0) != TIMES && childOp(0) != INTID) || 
@@ -460,16 +458,13 @@ sym * minus_(nodeType * node, action_t act, sym * curr){
             break;
     }
     if(hasChild(0))callChild(0);
-    
     if(hasChild(1))callChild(1);
-    
-
     return NULL;
 }
 sym * times_(nodeType * node, action_t act, sym * curr){
     switch(act){
         case setDims:
-            error(node,"Dimensions must be int literals");
+            error(node,"Dimension declarations must be int literals");
             break;
         case checkDims:
             if(childOp(0) != INTLIT || childOp(1) != INTID)
@@ -483,7 +478,7 @@ sym * times_(nodeType * node, action_t act, sym * curr){
 sym * divide_(nodeType * node, action_t act, sym * curr){
     switch(act){
         case setDims:
-            error(child(0),"Dimensions must be int literals");
+            error(child(0),"Dimension declarations must be int literals");
             break;
         case checkDims:
             error(child(0),DIM_ACCESS);
@@ -496,7 +491,7 @@ sym * divide_(nodeType * node, action_t act, sym * curr){
 sym * pow_(nodeType * node, action_t act, sym * curr){
     switch(act){
         case setDims:
-            error(child(0),"Dimensions must be int literals");
+            error(child(0),"Dimension declarations must be int literals");
             break;
         case checkDims:
             error(child(0),DIM_ACCESS);
@@ -509,7 +504,7 @@ sym * pow_(nodeType * node, action_t act, sym * curr){
 sym * uminus_(nodeType * node, action_t act, sym * curr){
     switch(act){
         case setDims:
-            error(child(0),"Dimensions must be int literals");
+            error(child(0),"Dimension declarations must be int literals");
             break;
         case checkDims:
             error(child(0),DIM_ACCESS);
@@ -549,6 +544,8 @@ sym * fncall_(nodeType * node, action_t act, sym * curr){
 }
 sym * indexed_(nodeType * node, action_t act, sym * curr){
     action_t tmp = act;
+    if(act == setExternArgs)
+        curr->nargs++;
     act = addSyms;
     if(hasChild(0)) curr = callChild(0);
     act = tmp;

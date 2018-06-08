@@ -3,7 +3,8 @@
 #include "symtable.h"
 #include "nameanalysis.h"
 
-int main(){
+int main(int argc, char * argv[]){
+    setInput(fopen(argv[1],"r"));
     yyparse(); 
     nameanalysis();
     printTable(TABLE);
