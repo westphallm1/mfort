@@ -372,7 +372,7 @@ void printErrorLine(int lineno, int charno){
 
 void yyerror(char *s) { 
     fprintf(stdout, "%d,%d: %s\n", yylineno, yycharno, s); 
-    printErrorLine(yylineno,yycharno);
+    printErrorLine(yylineno,yycharno-1);
     exit(1);
 } 
 

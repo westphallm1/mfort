@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 typedef enum{addSyms, setDims, checkDims, setArgs, setCommon,
-             setEquiv, setExternArgs} action_t;
+             setEquiv, setExternArgs, checkArgC} action_t;
 /* Macros for common access chains */
 #define child(idx) node->opr.op[idx]
 #define hasChild(idx) node->opr.op[idx]!=NULL
@@ -536,9 +536,13 @@ sym * fnassign_(nodeType * node, action_t act, sym * curr){
     return NULL;
 }
 sym * fncall_(nodeType * node, action_t act, sym * curr){
-    if(hasChild(0)) callChild(0);
+    if(hasChild(0)) curr = callChild(0);
+    act = checkArgC;
+    curr -> currarg = 1;
     
     if(hasChild(1)) callChild(1);
+    if(curr->currarg != curr->nargs)
+        error(child(0),"Wrong number of function arguments.");
     
     return NULL;
 }
@@ -554,8 +558,9 @@ sym * indexed_(nodeType * node, action_t act, sym * curr){
             act = checkDims;
             curr->currdim = 1;
         }else if(curr->isfunc){
+            act = checkArgC;
+            curr -> currarg = 1;
             //check args in typechecking
-            return curr;
         } else {
             //it's treated as a function, assume it's defined elsewhere
             curr->isfunc = 1;
@@ -566,8 +571,13 @@ sym * indexed_(nodeType * node, action_t act, sym * curr){
     //make sure that we have the right number of dims
     if(act == checkDims){
         if(curr->currdim != curr->ndim)
-            error(child(0),"wrong number of indices in subscript access");
+            error(child(0),"Wrong number of indices in subscript access.");
         curr->currdim = 0;
+    }
+    if(act == checkArgC){
+        if(curr->currarg != curr->nargs)
+            error(child(0),"Inconsistent argument count to external function.");
+        curr->currarg = 0;
     }
     return NULL;
 }
@@ -583,6 +593,8 @@ sym * formallist_(nodeType * node, action_t act, sym * curr){
     return NULL;
 }
 sym * actuallist_(nodeType * node, action_t act, sym * curr){
+    if(act == checkArgC)
+        curr->currarg++;
     if(hasChild(0)) callChild(0);
     if(hasChild(1)) callChild(1);
     return NULL;
@@ -610,6 +622,8 @@ sym * dimlist_(nodeType * node, action_t act, sym * curr){
 sym * explist_(nodeType * node, action_t act, sym * curr){
     if(act == checkDims)
         curr->currdim++;
+    if(act == checkArgC)
+        curr->currarg++;
     if(hasChild(0)) callChild(0);
     if(hasChild(1)) callChild(1);
     return NULL;

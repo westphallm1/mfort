@@ -17,4 +17,8 @@ c     Bad function call (wrong number of args)
 c     Extern function 
       A(1,3) = EXTERN(A(1,1),B(3),B(1,2))
 c     Inconsistent extern function calls
-      A(1,4) = EXTERN(A(1,2))
+      A(1,4) = EXTERN(A(1,2)) + EXTERN(TESTF(1,2,3),EXTERN(1))
+c     Common statement
+      COMMON (A, B, C, D, E)
+c     Equivalence statement
+      EQUIVALENCE (A, A2, A3, A4)
