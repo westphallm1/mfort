@@ -7,6 +7,7 @@ typedef struct SymTableEntry {
     type_t type;
     int common; //which common value is it? or none
     int isfunc;
+    int issubproc;
     union {
         int currdim;//counter for current dim, make sure dims are correct
         int currarg;//counter for current arg, make sure args are correct

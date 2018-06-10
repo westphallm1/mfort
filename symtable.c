@@ -19,6 +19,8 @@ void printSym(sym * s){
     printf("  %s",s->key);
     if(s->isfunc){
         printf(" (%d args)",s->nargs);
+    }else if(s->issubproc){
+        printf(" (%d arg subprocess)",s->nargs);
     }else if(s->ndim > 0) {
         printf(" (");
         for(int i = 0; i < s->ndim;printf("%d ",s->dimensions[i++]));
@@ -79,6 +81,7 @@ sym * addLocal(symTable *table, char * key){
     new_sym -> currdim = 0;
     new_sym -> nargs= 0;
     new_sym -> isfunc= 0;
+    new_sym -> issubproc= 0;
     new_sym -> common = -1;
     new_sym -> key = key;
     new_sym -> next = NULL;

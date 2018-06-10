@@ -18,6 +18,17 @@ c     Extern function
       A(1,3) = EXTERN(A(1,1),B(3),B(1,2))
 c     Inconsistent extern function calls
       A(1,4) = EXTERN(A(1,2)) + EXTERN(TESTF(1,2,3),EXTERN(1))
+c     Extern subprocess
+      CALL EXTERN2(1,2,3)
+c     Inconsistent extern subprocess calls
+      CALL EXTERN2(1,2)
+      CALL EXTERN2(1,2,3,4)
+c     calling a subscripted variable
+      CALL A(1,2,3)
+c     calling a function
+      CALL EXTERN(1,2,3)
+c     subprocess outside CALL
+      A(1,5) = EXTERN2(4,5,6)
 c     Common statement
       COMMON (A, B, C, D, E)
 c     Equivalence statement

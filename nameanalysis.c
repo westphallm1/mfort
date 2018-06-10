@@ -328,8 +328,25 @@ sym * assign_(nodeType * node, action_t act, sym * curr){
     return NULL;
 }
 sym * call_(nodeType * node, action_t act, sym * curr){
-    if(hasChild(0))callChild(0);
+    if(hasChild(0)) curr = callChild(0);
+    if(curr->issubproc){
+        act = checkArgC;
+        curr->currarg=1;
+    }else if (curr->isfunc){
+        error(child(0),"Cannot call a function.");
+        return NULL;
+    }else if (curr->ndim > 0){
+        error(child(0),"Cannot call a subscripted variable.");
+        return NULL;
+    }else{
+        act = setExternArgs;
+        curr->issubproc = 1;
+    }
     if(hasChild(1))callChild(1);
+
+    if(act == checkArgC && curr->currarg != curr->nargs)
+        error(child(0),"Inconsistent argument count to external subprocess.");
+
     return NULL;
 }
 sym * comma_(nodeType * node, action_t act, sym * curr){
@@ -554,13 +571,16 @@ sym * indexed_(nodeType * node, action_t act, sym * curr){
     if(hasChild(0)) curr = callChild(0);
     act = tmp;
     if(act != setDims){ //dimSetting is a given, otherwise figure it out
-        if(curr->ndim > 0 && !curr->isfunc){
-            act = checkDims;
-            curr->currdim = 1;
-        }else if(curr->isfunc){
+        if(curr->isfunc){
             act = checkArgC;
             curr -> currarg = 1;
             //check args in typechecking
+        } else if (curr->issubproc){
+            error(child(0),
+                "Cannot invoke subprocess outside of \"CALL\" statment.");
+        } else if(curr->ndim > 0){
+            act = checkDims;
+            curr->currdim = 1;
         } else {
             //it's treated as a function, assume it's defined elsewhere
             curr->isfunc = 1;
@@ -569,16 +589,10 @@ sym * indexed_(nodeType * node, action_t act, sym * curr){
     }
     if(hasChild(1)) callChild(1);
     //make sure that we have the right number of dims
-    if(act == checkDims){
-        if(curr->currdim != curr->ndim)
-            error(child(0),"Wrong number of indices in subscript access.");
-        curr->currdim = 0;
-    }
-    if(act == checkArgC){
-        if(curr->currarg != curr->nargs)
-            error(child(0),"Inconsistent argument count to external function.");
-        curr->currarg = 0;
-    }
+    if(act == checkDims && curr->currdim != curr->ndim)
+        error(child(0),"Wrong number of indices in subscript access.");
+    if(act == checkArgC && curr->currarg != curr->nargs)
+        error(child(0),"Inconsistent argument count to external function.");
     return NULL;
 }
 sym * formallist_(nodeType * node, action_t act, sym * curr){
