@@ -1,6 +1,7 @@
 %{
 #include <stdlib.h>
 #include <stdio.h>
+#include <ctype.h>
 #include <unistd.h>
 #include "fortran63.h"
 #include "fortran63.tab.h"
@@ -16,7 +17,12 @@ char yycharno = 1;
 
 
 int atotag(char * a){
-    return -1;
+    char * s , *e;
+    for(s=a;isspace(*s);s++);
+    if(*s == '\0') return -1; // all spaces = no tag 
+    for(e=s;isdigit(*e);e++);
+    *e='\0';
+    return atoi(s);
 }
 
 FILE * IN_FILE;

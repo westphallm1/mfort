@@ -4,33 +4,69 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define currScope(table) table->scopes[table->nscopes]
+#define CURR_SCOPE(table) table->scopes[table->nscopes]
 /* djb2 - via http://www.cse.yorku.ca/~oz/hash.html */
 unsigned long hash(unsigned char *str) {
     unsigned long hash = 5381;
     int c;
     while (c = *str++)
         hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-
     return hash;
 }
+/*
+ * Set of debugging functions to verify syms are correctly constructed
+ */
+void printDims(sym * s){
+    printf(" (");
+    printf("%d",s->dimensions[0]);   
+    for(int i = 1; i < s->ndim; i++){
+        printf(", %d",s->dimensions[i]);
+    }
+    printf(")");
+}
 
+void printArg(type_t arg){
+    switch(arg){
+        case typeInt:
+            printf("%s","Int");break;
+        case typeFloat:
+            printf("%s","Float");break;
+        case typeIntFn:
+            printf("%s","IntFn");break;
+        case typeFloatFn:
+            printf("%s","FloatFn");break;
+        case typeTag:
+            printf("%s","Tag");break;
+    }
+}
+void printArgs(sym * s){
+    printf(" (");
+    printArg(s->argtypes[0]);
+    for(int i = 1; i < s->nargs; i++){
+        printf(", ");
+        printArg(s->argtypes[i]);
+    }
+    printf(")");
+
+}
 void printSym(sym * s){
     printf("  %s",s->key);
     if(s->isfunc){
-        printf(" (%d args)",s->nargs);
+        printArgs(s);
+        printf(" (function)");
     }else if(s->issubproc){
-        printf(" (%d arg subprocess)",s->nargs);
+        printArgs(s);
+        printf(" (subprocess)");
+    }else if (s->istag){
+        printf(" (tag)");
     }else if(s->ndim > 0) {
-        printf(" (");
-        for(int i = 0; i < s->ndim;printf("%d ",s->dimensions[i++]));
-        printf(")");
+        printDims(s);
     }
     if(s->common > -1){
         printf(" (common%d)", s->common);
     }
     if(s->equiv != NULL){
-        printf(" ( = %s)",s->equiv->key);
+        printf(" ( equivalent %s)",s->equiv->key);
     }
     printf("\n");
 }
@@ -88,10 +124,10 @@ sym * addLocal(symTable *table, char * key){
     new_sym -> equiv= NULL;
 
     int idx = hash(key)%table->scope_size;
-    if(currScope(table)[idx] == 0){
-        currScope(table)[idx] = new_sym;
+    if(CURR_SCOPE(table)[idx] == 0){
+        CURR_SCOPE(table)[idx] = new_sym;
     }else{
-        sym * curr = currScope(table)[idx];
+        sym * curr = CURR_SCOPE(table)[idx];
         while(curr->next != NULL)
             curr = curr->next;
         curr->next = new_sym;
@@ -101,10 +137,10 @@ sym * addLocal(symTable *table, char * key){
 
 sym * getLocal(symTable *table, char * key){
     int idx = hash(key)%table->scope_size;
-    if(currScope(table)[idx] == 0){
+    if(CURR_SCOPE(table)[idx] == 0){
         return NULL;
     }else{
-        sym * curr = currScope(table)[idx];
+        sym * curr = CURR_SCOPE(table)[idx];
         while(curr->next != NULL && strcmp(key,curr->key))
             curr = curr->next;
         if(!strcmp(key,curr->key))

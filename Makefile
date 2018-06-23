@@ -28,4 +28,4 @@ scanner: scanner.c fortran63.yy.o fortran63.tab.o fortran63.h
 	gcc -g -o scanner scanner.c fortran63.yy.o fortran63.tab.o
 
 clean:
-	rm nameanalysis unparser scanner *.o *.tab.* *.yy.*
+	rm nameanalysis unparser scanner *.o *.tab.h *.yy.h

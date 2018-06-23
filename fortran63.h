@@ -6,8 +6,9 @@ typedef enum { typeInt, typeFloat, typeIntFn, typeFloatFn, typeTag} type_t;
 typedef struct SymTableEntry {
     type_t type;
     int common; //which common value is it? or none
-    int isfunc;
-    int issubproc;
+    char isfunc;
+    char issubproc;
+    char istag;
     union {
         int currdim;//counter for current dim, make sure dims are correct
         int currarg;//counter for current arg, make sure args are correct

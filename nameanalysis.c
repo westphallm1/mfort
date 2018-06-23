@@ -153,7 +153,7 @@ sym * intlit_(nodeType * node, action_t act, sym * curr){
         case checkDims:
             break;
         case setExternArgs:
-            curr->argtypes[curr->nargs++] = typeFloat; //autocast
+            curr->argtypes[curr->nargs++] = typeInt; //don't cast
             break;
     }
     return NULL;
@@ -184,6 +184,7 @@ sym * tag_(nodeType * node, action_t act, sym * curr){
         }else{
             curr = addLocal(TABLE,key);
             curr -> type = typeTag;
+            curr -> istag = 1;
         }
     }
     return curr;
@@ -248,7 +249,7 @@ sym * intfnid_(nodeType * node, action_t act, sym * curr){
             error(node,"Dimension access must be int literal or int id");
             break;
         case setExternArgs:
-            curr->argtypes[curr->nargs++] = typeInt; //autocast
+            curr->argtypes[curr->nargs++] = typeInt; //don't cast
             break;
     }
     if((curr = getLocal(TABLE,nodeName())) == NULL){
@@ -267,7 +268,7 @@ sym * floatfnid_(nodeType * node, action_t act, sym * curr){
             error(node,"Dimension access must be int literal or int id");
             break;
         case setExternArgs:
-            curr->argtypes[curr->nargs++] = typeFloat; //autocast
+            curr->argtypes[curr->nargs++] = typeFloat; //don't cast
             break;
     }
     if((curr = getLocal(TABLE,nodeName())) == NULL){
@@ -553,6 +554,10 @@ sym * fnassign_(nodeType * node, action_t act, sym * curr){
     return NULL;
 }
 sym * fncall_(nodeType * node, action_t act, sym * curr){
+    if(act == setExternArgs){
+        //set arg type
+        curr->nargs++;
+    }
     if(hasChild(0)) curr = callChild(0);
     act = checkArgC;
     curr -> currarg = 1;
@@ -565,9 +570,7 @@ sym * fncall_(nodeType * node, action_t act, sym * curr){
 }
 sym * indexed_(nodeType * node, action_t act, sym * curr){
     action_t tmp = act;
-    if(act == setExternArgs)
-        curr->nargs++;
-    act = addSyms;
+    if(act!=setExternArgs) act = addSyms;
     if(hasChild(0)) curr = callChild(0);
     act = tmp;
     if(act != setDims){ //dimSetting is a given, otherwise figure it out
