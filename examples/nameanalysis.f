@@ -1,3 +1,8 @@
+c    
+c     Symtable entry and subscript testing
+c     Make sure dimensioned variables, functions, and subprocesses
+c     Are distinguished correctly, and can't be interchanged
+c      
 c     Good dimensions, no errors
       DIMENSION A(10,10), B(17)
 c     Bad dimensions
@@ -29,7 +34,6 @@ c     calling a function
       CALL EXTERN(1,2,3)
 c     subprocess outside CALL
       A(1,5) = EXTERN2(4,5,6)
-
 c     Make sure tags get added to the sym table
  15   A(1,2) = 4
  20   B(3) = 7

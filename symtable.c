@@ -86,10 +86,8 @@ void printTable(symTable * table){
     }
 }
 
-
 symTable * newSymTable(int size){
     symTable * table = malloc(sizeof(symTable));
-
     table->scope_size = size;
     table->nscopes = 0;
     //start everything null
@@ -115,10 +113,13 @@ sym * addLocal(symTable *table, char * key){
     //set default features, let the caller change appropriately
     new_sym -> ndim = 0;
     new_sym -> currdim = 0;
-    new_sym -> nargs= 0;
-    new_sym -> isfunc= 0;
-    new_sym -> issubproc= 0;
+    new_sym -> nargs = 0;
+    new_sym -> isfunc = 0;
+    new_sym -> issubproc = 0;
+    new_sym -> istag = 0;
+    new_sym -> isdeclared = 0;
     new_sym -> common = -1;
+    new_sym -> cast_to = typeNone;
     new_sym -> key = key;
     new_sym -> next = NULL;
     new_sym -> equiv= NULL;

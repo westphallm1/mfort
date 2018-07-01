@@ -1,14 +1,21 @@
 #include <stdio.h>
 #ifndef fortran63_h
 #define fortran63_h
-typedef enum { typeInt, typeFloat, typeIntFn, typeFloatFn, typeTag} type_t; 
+typedef enum { typeInt, typeFloat, typeIntFn, typeFloatFn, typeTag, typeNone}
+        type_t; 
 /* sym table entry */
 typedef struct SymTableEntry {
     type_t type;
     int common; //which common value is it? or none
+
+    //one or none of these should be true
+    char issubscripted;
     char isfunc;
     char issubproc;
     char istag;
+
+    char isdeclared;
+    type_t cast_to;
     union {
         int currdim;//counter for current dim, make sure dims are correct
         int currarg;//counter for current arg, make sure args are correct

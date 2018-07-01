@@ -161,7 +161,7 @@ NOTF [A-EG-Z0-9]
         }
 
 \n"     "[^0 ] {yylineno+=1;yycharno=yyleng-1;}
-"c"[^\n]*\n    {NEW_LINE()}
+^[cC][^\n]*\n    {NEW_LINE()}
 
 " "  {MOVE_POS();}
 .    {MOVE_POS(); yyerror("Unrecognized character");}
