@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 typedef enum{addSyms, setDims, checkDims, setArgs, setCommon,
-             setEquiv, setExternArgs, checkArgC} action_t;
+             setEquiv, setExternArgs, checkArgC} na_action_t;
 /* Macros for common access chains */
 #define child(idx) node->opr.op[idx]
 #define hasChild(idx) node->opr.op[idx]!=NULL
@@ -25,61 +25,61 @@ char * DIM_ACCESS = "Invalid expression in subscript.";
 
 extern nodeType * yyrootptr;
 
-sym * na_intlit_(nodeType *,action_t,sym *);
-sym * na_floatlit_(nodeType *,action_t,sym *);
-sym * na_tag_(nodeType *,action_t,sym *);
-sym * na_intid_(nodeType *,action_t,sym *);
-sym * na_floatid_(nodeType *,action_t,sym *);
-sym * na_intfnid_(nodeType *,action_t,sym *);
-sym * na_floatfnid_(nodeType *,action_t,sym *);
-sym * na_floatfmtlit_(nodeType *,action_t,sym *);
-sym * na_expfmtlit_(nodeType *,action_t,sym *);
-sym * na_intfmtlit_(nodeType *,action_t,sym *);
-sym * na_holfmtlit_(nodeType *,action_t,sym *);
-sym * na_assign_(nodeType *,action_t,sym *);
-sym * na_call_(nodeType *,action_t,sym *);
-sym * na_comma_(nodeType *,action_t,sym *);
-sym * na_common_(nodeType *,action_t,sym *);
-sym * na_continue_(nodeType *,action_t,sym *);
-sym * na_dimension_(nodeType *,action_t,sym *);
-sym * na_do_(nodeType *,action_t,sym *);
-sym * na_end_(nodeType *,action_t,sym *);
-sym * na_equivalence_(nodeType *,action_t,sym *);
-sym * na_format_(nodeType *,action_t,sym *);
-sym * na_function_(nodeType *,action_t,sym *);
-sym * na_goto_(nodeType *,action_t,sym *);
-sym * na_if_(nodeType *,action_t,sym *);
-sym * na_lparen_(nodeType *,action_t,sym *);
-sym * na_newline_(nodeType *,action_t,sym *);
-sym * na_pause_(nodeType *,action_t,sym *);
-sym * na_print_(nodeType *,action_t,sym *);
-sym * na_read_(nodeType *,action_t,sym *);
-sym * na_return_(nodeType *,action_t,sym *);
-sym * na_rparen_(nodeType *,action_t,sym *);
-sym * na_stop_(nodeType *,action_t,sym *);
-sym * na_subprocess_(nodeType *,action_t,sym *);
-sym * na_plus_(nodeType *,action_t,sym *);
-sym * na_minus_(nodeType *,action_t,sym *);
-sym * na_times_(nodeType *,action_t,sym *);
-sym * na_divide_(nodeType *,action_t,sym *);
-sym * na_pow_(nodeType *,action_t,sym *);
-sym * na_uminus_(nodeType *,action_t,sym *);
-sym * na_stmt_(nodeType *,action_t,sym *);
-sym * na_stmtlist_(nodeType *,action_t,sym *);
-sym * na_fnassign_(nodeType *,action_t,sym *);
-sym * na_fncall_(nodeType *,action_t,sym *);
-sym * na_indexed_(nodeType *,action_t,sym *);
-sym * na_formallist_(nodeType *,action_t,sym *);
-sym * na_actuallist_(nodeType *,action_t,sym *);
-sym * na_labellist_(nodeType *,action_t,sym *);
-sym * na_fmtlist_(nodeType *,action_t,sym *);
-sym * na_loclist_(nodeType *,action_t,sym *);
-sym * na_dimlist_(nodeType *,action_t,sym *);
-sym * na_explist_(nodeType *,action_t,sym *);
-sym * na_program_(nodeType *,action_t,sym *);
-sym * na_main_(nodeType *,action_t,sym *);
+sym * na_intlit_(nodeType *,na_action_t,sym *);
+sym * na_floatlit_(nodeType *,na_action_t,sym *);
+sym * na_tag_(nodeType *,na_action_t,sym *);
+sym * na_intid_(nodeType *,na_action_t,sym *);
+sym * na_floatid_(nodeType *,na_action_t,sym *);
+sym * na_intfnid_(nodeType *,na_action_t,sym *);
+sym * na_floatfnid_(nodeType *,na_action_t,sym *);
+sym * na_floatfmtlit_(nodeType *,na_action_t,sym *);
+sym * na_expfmtlit_(nodeType *,na_action_t,sym *);
+sym * na_intfmtlit_(nodeType *,na_action_t,sym *);
+sym * na_holfmtlit_(nodeType *,na_action_t,sym *);
+sym * na_assign_(nodeType *,na_action_t,sym *);
+sym * na_call_(nodeType *,na_action_t,sym *);
+sym * na_comma_(nodeType *,na_action_t,sym *);
+sym * na_common_(nodeType *,na_action_t,sym *);
+sym * na_continue_(nodeType *,na_action_t,sym *);
+sym * na_dimension_(nodeType *,na_action_t,sym *);
+sym * na_do_(nodeType *,na_action_t,sym *);
+sym * na_end_(nodeType *,na_action_t,sym *);
+sym * na_equivalence_(nodeType *,na_action_t,sym *);
+sym * na_format_(nodeType *,na_action_t,sym *);
+sym * na_function_(nodeType *,na_action_t,sym *);
+sym * na_goto_(nodeType *,na_action_t,sym *);
+sym * na_if_(nodeType *,na_action_t,sym *);
+sym * na_lparen_(nodeType *,na_action_t,sym *);
+sym * na_newline_(nodeType *,na_action_t,sym *);
+sym * na_pause_(nodeType *,na_action_t,sym *);
+sym * na_print_(nodeType *,na_action_t,sym *);
+sym * na_read_(nodeType *,na_action_t,sym *);
+sym * na_return_(nodeType *,na_action_t,sym *);
+sym * na_rparen_(nodeType *,na_action_t,sym *);
+sym * na_stop_(nodeType *,na_action_t,sym *);
+sym * na_subprocess_(nodeType *,na_action_t,sym *);
+sym * na_plus_(nodeType *,na_action_t,sym *);
+sym * na_minus_(nodeType *,na_action_t,sym *);
+sym * na_times_(nodeType *,na_action_t,sym *);
+sym * na_divide_(nodeType *,na_action_t,sym *);
+sym * na_pow_(nodeType *,na_action_t,sym *);
+sym * na_uminus_(nodeType *,na_action_t,sym *);
+sym * na_stmt_(nodeType *,na_action_t,sym *);
+sym * na_stmtlist_(nodeType *,na_action_t,sym *);
+sym * na_fnassign_(nodeType *,na_action_t,sym *);
+sym * na_fncall_(nodeType *,na_action_t,sym *);
+sym * na_indexed_(nodeType *,na_action_t,sym *);
+sym * na_formallist_(nodeType *,na_action_t,sym *);
+sym * na_actuallist_(nodeType *,na_action_t,sym *);
+sym * na_labellist_(nodeType *,na_action_t,sym *);
+sym * na_fmtlist_(nodeType *,na_action_t,sym *);
+sym * na_loclist_(nodeType *,na_action_t,sym *);
+sym * na_dimlist_(nodeType *,na_action_t,sym *);
+sym * na_explist_(nodeType *,na_action_t,sym *);
+sym * na_program_(nodeType *,na_action_t,sym *);
+sym * na_main_(nodeType *,na_action_t,sym *);
 
-sym * (*jmptable[])(nodeType *,action_t,sym *) = {
+sym * (*jmptable[])(nodeType *,na_action_t,sym *) = {
     [INTLIT] = na_intlit_,
     [FLOATLIT] = na_floatlit_,
     [TAG] = na_tag_,
@@ -143,7 +143,7 @@ void error(nodeType * node, char * msg){
     FOUND_ERROR = 1;
 }
 
-sym * na_intlit_(nodeType * node, action_t act, sym * curr){
+sym * na_intlit_(nodeType * node, na_action_t act, sym * curr){
     switch(act){
         case setDims:
             if(curr->ndim == 3)
@@ -158,7 +158,7 @@ sym * na_intlit_(nodeType * node, action_t act, sym * curr){
     }
     return NULL;
 }
-sym * na_floatlit_(nodeType * node, action_t act, sym * curr){
+sym * na_floatlit_(nodeType * node, na_action_t act, sym * curr){
     switch(act){
         case setDims:
             error(node,"Dimension declarations must be int literals");
@@ -173,7 +173,7 @@ sym * na_floatlit_(nodeType * node, action_t act, sym * curr){
     return NULL;
 }
 
-sym * na_tag_(nodeType * node, action_t act, sym * curr){
+sym * na_tag_(nodeType * node, na_action_t act, sym * curr){
     if(node -> iVal.value == -1){
         return NULL;
     }else{
@@ -189,7 +189,7 @@ sym * na_tag_(nodeType * node, action_t act, sym * curr){
     }
     return curr;
 }
-sym * na_intid_(nodeType * node, action_t act, sym * curr){
+sym * na_intid_(nodeType * node, na_action_t act, sym * curr){
     sym * equiv = NULL;
     switch(act){
         case setDims:
@@ -213,7 +213,7 @@ sym * na_intid_(nodeType * node, action_t act, sym * curr){
         curr->common=COMMON_COUNT++;
     return curr;
 }
-sym * na_floatid_(nodeType * node, action_t act, sym * curr){
+sym * na_floatid_(nodeType * node, na_action_t act, sym * curr){
     sym * equiv = NULL;
     switch(act){
         case setDims:
@@ -240,7 +240,7 @@ sym * na_floatid_(nodeType * node, action_t act, sym * curr){
         curr->common=++COMMON_COUNT;
     return curr;
 }
-sym * na_intfnid_(nodeType * node, action_t act, sym * curr){
+sym * na_intfnid_(nodeType * node, na_action_t act, sym * curr){
     switch(act){
         case setDims:
             error(node,"Dimension declarations must be int literals");
@@ -259,7 +259,7 @@ sym * na_intfnid_(nodeType * node, action_t act, sym * curr){
     }
     return curr;
 }
-sym * na_floatfnid_(nodeType * node, action_t act, sym * curr){
+sym * na_floatfnid_(nodeType * node, na_action_t act, sym * curr){
     switch(act){
         case setDims:
             error(node,"Dimension declarations must be int literals");
@@ -278,7 +278,7 @@ sym * na_floatfnid_(nodeType * node, action_t act, sym * curr){
     }
     return curr;
 }
-sym * na_floatfmtlit_(nodeType * node, action_t act, sym * curr){
+sym * na_floatfmtlit_(nodeType * node, na_action_t act, sym * curr){
     switch(act){
         case setDims:
             error(node,"Dimension declarations must be int literals");
@@ -289,7 +289,7 @@ sym * na_floatfmtlit_(nodeType * node, action_t act, sym * curr){
     }
     return NULL;
 }
-sym * na_expfmtlit_(nodeType * node, action_t act, sym * curr){
+sym * na_expfmtlit_(nodeType * node, na_action_t act, sym * curr){
     switch(act){
         case setDims:
             error(node,"Dimension declarations must be int literals");
@@ -300,7 +300,7 @@ sym * na_expfmtlit_(nodeType * node, action_t act, sym * curr){
     }
     return NULL;
 }
-sym * na_intfmtlit_(nodeType * node, action_t act, sym * curr){
+sym * na_intfmtlit_(nodeType * node, na_action_t act, sym * curr){
     switch(act){
         case setDims:
             error(node,"Dimension declarations must be int literals");
@@ -311,7 +311,7 @@ sym * na_intfmtlit_(nodeType * node, action_t act, sym * curr){
     }
     return NULL;
 }
-sym * na_holfmtlit_(nodeType * node, action_t act, sym * curr){
+sym * na_holfmtlit_(nodeType * node, na_action_t act, sym * curr){
     switch(act){
         case setDims:
             error(node,"Dimension declarations must be int literals");
@@ -323,12 +323,12 @@ sym * na_holfmtlit_(nodeType * node, action_t act, sym * curr){
     return NULL;
 }
 
-sym * na_assign_(nodeType * node, action_t act, sym * curr){
+sym * na_assign_(nodeType * node, na_action_t act, sym * curr){
     if(hasChild(0)) callChild(0);
     if(hasChild(1))callChild(1);
     return NULL;
 }
-sym * na_call_(nodeType * node, action_t act, sym * curr){
+sym * na_call_(nodeType * node, na_action_t act, sym * curr){
     if(hasChild(0)) curr = callChild(0);
     if(curr->issubproc){
         act = checkArgC;
@@ -350,23 +350,23 @@ sym * na_call_(nodeType * node, action_t act, sym * curr){
 
     return NULL;
 }
-sym * na_comma_(nodeType * node, action_t act, sym * curr){
+sym * na_comma_(nodeType * node, na_action_t act, sym * curr){
     return NULL;
 }
-sym * na_common_(nodeType * node, action_t act, sym * curr){
+sym * na_common_(nodeType * node, na_action_t act, sym * curr){
     act = setCommon;
     if(hasChild(0))callChild(0);
     return NULL;
 }
-sym * na_continue_(nodeType * node, action_t act, sym * curr){
+sym * na_continue_(nodeType * node, na_action_t act, sym * curr){
     return NULL;
 }
-sym * na_dimension_(nodeType * node, action_t act, sym * curr){
+sym * na_dimension_(nodeType * node, na_action_t act, sym * curr){
     act = setDims;
     if(hasChild(0))callChild(0);
     return NULL;
 }
-sym * na_do_(nodeType * node, action_t act, sym * curr){
+sym * na_do_(nodeType * node, na_action_t act, sym * curr){
     if(hasChild(0))callChild(0);
     if(hasChild(1))callChild(1);
     if(hasChild(2))callChild(2);
@@ -376,69 +376,69 @@ sym * na_do_(nodeType * node, action_t act, sym * curr){
     }
     return NULL;
 }
-sym * na_end_(nodeType * node, action_t act, sym * curr){
+sym * na_end_(nodeType * node, na_action_t act, sym * curr){
     return NULL;
 }
-sym * na_equivalence_(nodeType * node, action_t act, sym * curr){
+sym * na_equivalence_(nodeType * node, na_action_t act, sym * curr){
     act = setEquiv;
     curr = NULL;
     if(hasChild(0))callChild(0);
     return NULL;
 }
-sym * na_format_(nodeType * node, action_t act, sym * curr){
+sym * na_format_(nodeType * node, na_action_t act, sym * curr){
     return NULL;
 }
-sym * na_function_(nodeType * node, action_t act, sym * curr){
+sym * na_function_(nodeType * node, na_action_t act, sym * curr){
     if(hasChild(0)) curr = callChild(0);
     if(hasChild(1))callChild(1);
     if(hasChild(2))callChild(2);
     return NULL;
 }
-sym * na_goto_(nodeType * node, action_t act, sym * curr){
+sym * na_goto_(nodeType * node, na_action_t act, sym * curr){
     if(hasChild(0)){
         callChild(0);
     }
     if(hasChild(1)) callChild(1);
     return NULL;
 }
-sym * na_if_(nodeType * node, action_t act, sym * curr){
+sym * na_if_(nodeType * node, na_action_t act, sym * curr){
     if(hasChild(0))callChild(0);
     if(hasChild(1))callChild(1);
     if(hasChild(2))callChild(2);
     if(hasChild(3))callChild(3);
     return NULL;
 }
-sym * na_lparen_(nodeType * node, action_t act, sym * curr){
+sym * na_lparen_(nodeType * node, na_action_t act, sym * curr){
     return NULL;
 }
-sym * na_newline_(nodeType * node, action_t act, sym * curr){
+sym * na_newline_(nodeType * node, na_action_t act, sym * curr){
     return NULL;
 }
-sym * na_pause_(nodeType * node, action_t act, sym * curr){
+sym * na_pause_(nodeType * node, na_action_t act, sym * curr){
     if(hasChild(0))callChild(0);
     return NULL;
 }
-sym * na_print_(nodeType * node, action_t act, sym * curr){
-    if(hasChild(0))callChild(0);
-    if(hasChild(1))callChild(1);
-    return NULL;
-}
-sym * na_read_(nodeType * node, action_t act, sym * curr){
+sym * na_print_(nodeType * node, na_action_t act, sym * curr){
     if(hasChild(0))callChild(0);
     if(hasChild(1))callChild(1);
     return NULL;
 }
-sym * na_return_(nodeType * node, action_t act, sym * curr){
+sym * na_read_(nodeType * node, na_action_t act, sym * curr){
+    if(hasChild(0))callChild(0);
+    if(hasChild(1))callChild(1);
     return NULL;
 }
-sym * na_rparen_(nodeType * node, action_t act, sym * curr){
+sym * na_return_(nodeType * node, na_action_t act, sym * curr){
     return NULL;
 }
-sym * na_stop_(nodeType * node, action_t act, sym * curr){
+sym * na_rparen_(nodeType * node, na_action_t act, sym * curr){
+    return NULL;
+}
+sym * na_stop_(nodeType * node, na_action_t act, sym * curr){
     if(hasChild(0))callChild(0);
     return NULL;
 }
-sym * na_subprocess_(nodeType * node, action_t act, sym * curr){
+sym * na_subprocess_(nodeType * node, na_action_t act, sym * curr){
     
     if(hasChild(0))callChild(0);
     
@@ -448,7 +448,7 @@ sym * na_subprocess_(nodeType * node, action_t act, sym * curr){
 
     return NULL;
 }
-sym * na_plus_(nodeType * node, action_t act, sym * curr){
+sym * na_plus_(nodeType * node, na_action_t act, sym * curr){
     switch(act){
         case setDims:
             error(node,"Dimension declarations must be int literals");
@@ -464,7 +464,7 @@ sym * na_plus_(nodeType * node, action_t act, sym * curr){
     
     return NULL;
 }
-sym * na_minus_(nodeType * node, action_t act, sym * curr){
+sym * na_minus_(nodeType * node, na_action_t act, sym * curr){
     switch(act){
         case setDims:
             error(node,"Dimension declarations must be int literals");
@@ -479,7 +479,7 @@ sym * na_minus_(nodeType * node, action_t act, sym * curr){
     if(hasChild(1))callChild(1);
     return NULL;
 }
-sym * na_times_(nodeType * node, action_t act, sym * curr){
+sym * na_times_(nodeType * node, na_action_t act, sym * curr){
     switch(act){
         case setDims:
             error(node,"Dimension declarations must be int literals");
@@ -493,7 +493,7 @@ sym * na_times_(nodeType * node, action_t act, sym * curr){
     if(hasChild(1))callChild(1);
     return NULL;
 }
-sym * na_divide_(nodeType * node, action_t act, sym * curr){
+sym * na_divide_(nodeType * node, na_action_t act, sym * curr){
     switch(act){
         case setDims:
             error(child(0),"Dimension declarations must be int literals");
@@ -506,7 +506,7 @@ sym * na_divide_(nodeType * node, action_t act, sym * curr){
     if(hasChild(1))callChild(1);
     return NULL;
 }
-sym * na_pow_(nodeType * node, action_t act, sym * curr){
+sym * na_pow_(nodeType * node, na_action_t act, sym * curr){
     switch(act){
         case setDims:
             error(child(0),"Dimension declarations must be int literals");
@@ -519,7 +519,7 @@ sym * na_pow_(nodeType * node, action_t act, sym * curr){
     if(hasChild(1))callChild(1);
     return NULL;
 }
-sym * na_uminus_(nodeType * node, action_t act, sym * curr){
+sym * na_uminus_(nodeType * node, na_action_t act, sym * curr){
     switch(act){
         case setDims:
             error(child(0),"Dimension declarations must be int literals");
@@ -531,17 +531,17 @@ sym * na_uminus_(nodeType * node, action_t act, sym * curr){
     if(hasChild(0))callChild(0);
     return NULL;
 }
-sym * na_stmt_(nodeType * node, action_t act, sym * curr){
+sym * na_stmt_(nodeType * node, na_action_t act, sym * curr){
     if(hasChild(0)) callChild(0);
     if(hasChild(1)) callChild(1);
     return NULL;
 }
-sym * na_stmtlist_(nodeType * node, action_t act, sym * curr){
+sym * na_stmtlist_(nodeType * node, na_action_t act, sym * curr){
     if(hasChild(0)) callChild(0);
     if(hasChild(1)) callChild(1);
     return NULL;
 }
-sym * na_fnassign_(nodeType * node, action_t act, sym * curr){
+sym * na_fnassign_(nodeType * node, na_action_t act, sym * curr){
     act = addSyms;
     if(hasChild(0)) curr = callChild(0);
     curr -> nargs = 0;
@@ -555,7 +555,7 @@ sym * na_fnassign_(nodeType * node, action_t act, sym * curr){
     return NULL;
 }
 
-sym * na_fncall_(nodeType * node, action_t act, sym * curr){
+sym * na_fncall_(nodeType * node, na_action_t act, sym * curr){
     if(act == setExternArgs){
         //set arg type
         curr->nargs++;
@@ -571,8 +571,8 @@ sym * na_fncall_(nodeType * node, action_t act, sym * curr){
     return NULL;
 }
 
-sym * na_indexed_(nodeType * node, action_t act, sym * curr){
-    action_t tmp = act;
+sym * na_indexed_(nodeType * node, na_action_t act, sym * curr){
+    na_action_t tmp = act;
     if(act!=setExternArgs) act = addSyms;
     if(hasChild(0)) curr = callChild(0);
     act = tmp;
@@ -611,7 +611,7 @@ sym * na_indexed_(nodeType * node, action_t act, sym * curr){
 
     return NULL;
 }
-sym * na_formallist_(nodeType * node, action_t act, sym * curr){
+sym * na_formallist_(nodeType * node, na_action_t act, sym * curr){
     if(act == setEquiv && curr == NULL){
         act = addSyms;
         curr = callChild(0);
@@ -622,34 +622,34 @@ sym * na_formallist_(nodeType * node, action_t act, sym * curr){
     if(hasChild(1)) callChild(1);
     return NULL;
 }
-sym * na_actuallist_(nodeType * node, action_t act, sym * curr){
+sym * na_actuallist_(nodeType * node, na_action_t act, sym * curr){
     if(act == checkArgC)
         curr->currarg++;
     if(hasChild(0)) callChild(0);
     if(hasChild(1)) callChild(1);
     return NULL;
 }
-sym * na_labellist_(nodeType * node, action_t act, sym * curr){
+sym * na_labellist_(nodeType * node, na_action_t act, sym * curr){
     if(hasChild(0)) callChild(0);
     if(hasChild(1)) callChild(1);
     return NULL;
 }
-sym * na_fmtlist_(nodeType * node, action_t act, sym * curr){
+sym * na_fmtlist_(nodeType * node, na_action_t act, sym * curr){
     if(hasChild(0)) callChild(0);
     if(hasChild(1)) callChild(1);
     return NULL;
 }
-sym * na_loclist_(nodeType * node, action_t act, sym * curr){
+sym * na_loclist_(nodeType * node, na_action_t act, sym * curr){
     if(hasChild(0)) callChild(0);
     if(hasChild(1)) callChild(1);
     return NULL;
 }
-sym * na_dimlist_(nodeType * node, action_t act, sym * curr){
+sym * na_dimlist_(nodeType * node, na_action_t act, sym * curr){
     if(hasChild(0)) callChild(0);
     if(hasChild(1)) callChild(1);
     return NULL;
 }
-sym * na_explist_(nodeType * node, action_t act, sym * curr){
+sym * na_explist_(nodeType * node, na_action_t act, sym * curr){
     if(act == checkDims)
         curr->currdim++;
     if(act == checkArgC)
@@ -659,12 +659,12 @@ sym * na_explist_(nodeType * node, action_t act, sym * curr){
     return NULL;
 }
 
-sym * na_main_(nodeType * node, action_t act, sym * curr){
+sym * na_main_(nodeType * node, na_action_t act, sym * curr){
     callChild(0);
     return NULL;
 }
 
-sym * na_program_(nodeType * node, action_t act, sym * curr){
+sym * na_program_(nodeType * node, na_action_t act, sym * curr){
     callChild(0);
     return NULL;
 }

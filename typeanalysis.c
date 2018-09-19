@@ -10,74 +10,80 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef enum{setCastType, checkArgType} action_t;
+typedef enum{setCastType, setSymToCheck, checkArgType} ta_action_t;
+typedef union ta_return_value {
+    type_t t;
+    sym *  s;
+} ta_ret_t;
+
+ta_ret_t NO_RET;
 /* Macros for common access chains */
 #define child(idx) node->opr.op[idx]
 #define hasChild(idx) node->opr.op[idx]!=NULL
 #define childOp(idx) node->opr.op[idx]->opr.oper
 #define nodeName() node -> sVal.s
 #define callChild(idx) ta_jmptable[node->opr.op[idx]->opr.oper]\
-    (node->opr.op[idx],act,curr)
+    (node->opr.op[idx],act,curr,s_curr)
 FILE * OUT;
 symTable * TABLE;
 
 extern nodeType * yyrootptr;
 
-type_t ta_intlit_(nodeType *,action_t,type_t);
-type_t ta_floatlit_(nodeType *,action_t,type_t);
-type_t ta_tag_(nodeType *,action_t,type_t);
-type_t ta_intid_(nodeType *,action_t,type_t);
-type_t ta_floatid_(nodeType *,action_t,type_t);
-type_t ta_intfnid_(nodeType *,action_t,type_t);
-type_t ta_floatfnid_(nodeType *,action_t,type_t);
-type_t ta_floatfmtlit_(nodeType *,action_t,type_t);
-type_t ta_expfmtlit_(nodeType *,action_t,type_t);
-type_t ta_intfmtlit_(nodeType *,action_t,type_t);
-type_t ta_holfmtlit_(nodeType *,action_t,type_t);
-type_t ta_assign_(nodeType *,action_t,type_t);
-type_t ta_call_(nodeType *,action_t,type_t);
-type_t ta_comma_(nodeType *,action_t,type_t);
-type_t ta_common_(nodeType *,action_t,type_t);
-type_t ta_continue_(nodeType *,action_t,type_t);
-type_t ta_dimension_(nodeType *,action_t,type_t);
-type_t ta_do_(nodeType *,action_t,type_t);
-type_t ta_end_(nodeType *,action_t,type_t);
-type_t ta_equivalence_(nodeType *,action_t,type_t);
-type_t ta_format_(nodeType *,action_t,type_t);
-type_t ta_function_(nodeType *,action_t,type_t);
-type_t ta_goto_(nodeType *,action_t,type_t);
-type_t ta_if_(nodeType *,action_t,type_t);
-type_t ta_lparen_(nodeType *,action_t,type_t);
-type_t ta_newline_(nodeType *,action_t,type_t);
-type_t ta_pause_(nodeType *,action_t,type_t);
-type_t ta_print_(nodeType *,action_t,type_t);
-type_t ta_read_(nodeType *,action_t,type_t);
-type_t ta_return_(nodeType *,action_t,type_t);
-type_t ta_rparen_(nodeType *,action_t,type_t);
-type_t ta_stop_(nodeType *,action_t,type_t);
-type_t ta_subprocess_(nodeType *,action_t,type_t);
-type_t ta_plus_(nodeType *,action_t,type_t);
-type_t ta_minus_(nodeType *,action_t,type_t);
-type_t ta_times_(nodeType *,action_t,type_t);
-type_t ta_divide_(nodeType *,action_t,type_t);
-type_t ta_pow_(nodeType *,action_t,type_t);
-type_t ta_uminus_(nodeType *,action_t,type_t);
-type_t ta_stmt_(nodeType *,action_t,type_t);
-type_t ta_stmtlist_(nodeType *,action_t,type_t);
-type_t ta_fnassign_(nodeType *,action_t,type_t);
-type_t ta_fncall_(nodeType *,action_t,type_t);
-type_t ta_indexed_(nodeType *,action_t,type_t);
-type_t ta_formallist_(nodeType *,action_t,type_t);
-type_t ta_actuallist_(nodeType *,action_t,type_t);
-type_t ta_labellist_(nodeType *,action_t,type_t);
-type_t ta_fmtlist_(nodeType *,action_t,type_t);
-type_t ta_loclist_(nodeType *,action_t,type_t);
-type_t ta_dimlist_(nodeType *,action_t,type_t);
-type_t ta_explist_(nodeType *,action_t,type_t);
-type_t ta_program_(nodeType *,action_t,type_t);
-type_t ta_main_(nodeType *,action_t,type_t);
+ta_ret_t ta_intlit_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_floatlit_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_tag_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_intid_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_floatid_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_intfnid_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_floatfnid_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_floatfmtlit_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_expfmtlit_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_intfmtlit_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_holfmtlit_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_assign_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_call_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_comma_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_common_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_continue_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_dimension_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_do_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_end_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_equivalence_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_format_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_function_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_goto_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_if_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_lparen_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_newline_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_pause_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_print_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_read_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_return_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_rparen_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_stop_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_subprocess_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_plus_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_minus_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_times_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_divide_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_pow_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_uminus_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_stmt_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_stmtlist_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_fnassign_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_fncall_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_indexed_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_formallist_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_actuallist_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_labellist_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_fmtlist_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_loclist_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_dimlist_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_explist_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_program_(nodeType *,ta_action_t,type_t,sym *);
+ta_ret_t ta_main_(nodeType *,ta_action_t,type_t,sym *);
 
-type_t (*ta_jmptable[])(nodeType *,action_t,type_t) = {
+ta_ret_t (*ta_jmptable[])(nodeType *,ta_action_t,type_t,sym *) = {
     [INTLIT] = ta_intlit_,
     [FLOATLIT] = ta_floatlit_,
     [TAG] = ta_tag_,
@@ -133,65 +139,116 @@ type_t (*ta_jmptable[])(nodeType *,action_t,type_t) = {
     [MAIN] = ta_main_,
 };
 
-type_t ta_intlit_(nodeType * node, action_t act, type_t curr){
-    return typeNone;
+ta_ret_t ta_intlit_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    if(curr == typeFloat && act == setCastType)
+        node -> castTo = curr;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_floatlit_(nodeType * node, action_t act, type_t curr){
-    return typeNone;
-}
-
-type_t ta_tag_(nodeType * node, action_t act, type_t curr){
-    return typeFloat;
-}
-type_t ta_intid_(nodeType * node, action_t act, type_t curr){
-    return typeFloat;
-}
-type_t ta_floatid_(nodeType * node, action_t act, type_t curr){
-    return typeFloat;
-}
-type_t ta_intfnid_(nodeType * node, action_t act, type_t curr){
-    return typeFloat;
-}
-type_t ta_floatfnid_(nodeType * node, action_t act, type_t curr){
-    return typeFloat;
-}
-type_t ta_floatfmtlit_(nodeType * node, action_t act, type_t curr){
-    return typeNone;
-}
-type_t ta_expfmtlit_(nodeType * node, action_t act, type_t curr){
-    return typeNone;
-}
-type_t ta_intfmtlit_(nodeType * node, action_t act, type_t curr){
-    return typeNone;
-}
-type_t ta_holfmtlit_(nodeType * node, action_t act, type_t curr){
-    return typeNone;
+ta_ret_t ta_floatlit_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    if(curr == typeInt && act == setCastType)
+        error(node,"Can't cast float to int.");
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
 
-type_t ta_assign_(nodeType * node, action_t act, type_t curr){
-    if(hasChild(0)) callChild(0);
-    if(hasChild(1))callChild(1);
-    return typeNone;
+ta_ret_t ta_tag_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_call_(nodeType * node, action_t act, type_t curr){
-    if(hasChild(0)) curr = callChild(0);
-    return typeNone;
+ta_ret_t ta_intid_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    if(curr == typeFloat && act == setCastType)
+        node -> castTo = curr;
+    if(act == setSymToCheck){
+        ta_ret_t r = {.s = getLocal(TABLE,nodeName())};
+        return r;
+    }
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_comma_(nodeType * node, action_t act, type_t curr){
-    return typeNone;
+ta_ret_t ta_floatid_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    if(curr == typeInt && act == setCastType)
+        error(node,"Can't cast float to int.");
+    if(act == setSymToCheck){
+        ta_ret_t r = {.s = getLocal(TABLE,nodeName())};
+        return r;
+    }
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_common_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_intfnid_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    if(curr == typeFloat && act == setCastType)
+        node -> castTo = curr;
+    if(act == setSymToCheck){
+        ta_ret_t r = {.s = getLocal(TABLE,nodeName())};
+        return r;
+    }
+    ta_ret_t r = {.t = typeNone};
+    return r;
+}
+ta_ret_t ta_floatfnid_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    if(curr == typeInt && act == setCastType)
+        error(node,"Can't cast float to int.");
+    if(act == setSymToCheck){
+        ta_ret_t r = {.s = getLocal(TABLE,nodeName())};
+        return r;
+    }
+    ta_ret_t r = {.t = typeNone};
+    return r;
+}
+ta_ret_t ta_floatfmtlit_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    ta_ret_t r = {.t = typeNone};
+    return r;
+}
+ta_ret_t ta_expfmtlit_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    ta_ret_t r = {.t = typeNone};
+    return r;
+}
+ta_ret_t ta_intfmtlit_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    ta_ret_t r = {.t = typeNone};
+    return r;
+}
+ta_ret_t ta_holfmtlit_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    ta_ret_t r = {.t = typeNone};
+    return r;
+}
+
+ta_ret_t ta_assign_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    curr = typeNone;
+    act = setCastType;
+    //set the cast type to the LHS of the assign
+    if(hasChild(0)) curr = callChild(0).t;
+    //cast everything on the RHS 
+    if(hasChild(1)) callChild(1);
+    ta_ret_t r = {.t = typeNone};
+    return r;
+}
+ta_ret_t ta_call_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    act = checkArgType;
+    if(hasChild(0)) s_curr = callChild(0).s;
+    if(hasChild(1)) curr = callChild(1).t;
+    ta_ret_t r = {.t = typeNone};
+    return r;
+}
+ta_ret_t ta_comma_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    ta_ret_t r = {.t = typeNone};
+    return r;
+}
+ta_ret_t ta_common_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0))callChild(0);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_continue_(nodeType * node, action_t act, type_t curr){
-    return typeNone;
+ta_ret_t ta_continue_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_dimension_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_dimension_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0))callChild(0);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_do_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_do_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0))callChild(0);
     if(hasChild(1))callChild(1);
     if(hasChild(2))callChild(2);
@@ -199,69 +256,84 @@ type_t ta_do_(nodeType * node, action_t act, type_t curr){
     if(hasChild(4)){
         callChild(4);
     }
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_end_(nodeType * node, action_t act, type_t curr){
-    return typeNone;
+ta_ret_t ta_end_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_equivalence_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_equivalence_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0))callChild(0);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_format_(nodeType * node, action_t act, type_t curr){
-    return typeNone;
+ta_ret_t ta_format_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_function_(nodeType * node, action_t act, type_t curr){
-    if(hasChild(0)) curr = callChild(0);
+ta_ret_t ta_function_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    if(hasChild(0)) callChild(0);
     if(hasChild(1))callChild(1);
     if(hasChild(2))callChild(2);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_goto_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_goto_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0)){
         callChild(0);
     }
     if(hasChild(1)) callChild(1);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_if_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_if_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0))callChild(0);
     if(hasChild(1))callChild(1);
     if(hasChild(2))callChild(2);
     if(hasChild(3))callChild(3);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_lparen_(nodeType * node, action_t act, type_t curr){
-    return typeNone;
+ta_ret_t ta_lparen_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_newline_(nodeType * node, action_t act, type_t curr){
-    return typeNone;
+ta_ret_t ta_newline_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_pause_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_pause_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0))callChild(0);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_print_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_print_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0))callChild(0);
     if(hasChild(1))callChild(1);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_read_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_read_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0))callChild(0);
     if(hasChild(1))callChild(1);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_return_(nodeType * node, action_t act, type_t curr){
-    return typeNone;
+ta_ret_t ta_return_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_rparen_(nodeType * node, action_t act, type_t curr){
-    return typeNone;
+ta_ret_t ta_rparen_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_stop_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_stop_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0))callChild(0);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_subprocess_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_subprocess_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     
     if(hasChild(0))callChild(0);
     
@@ -269,105 +341,126 @@ type_t ta_subprocess_(nodeType * node, action_t act, type_t curr){
     
     if(hasChild(2))callChild(2);
 
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_plus_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_plus_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0))callChild(0);
     if(hasChild(1))callChild(1);
     
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_minus_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_minus_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0))callChild(0);
     if(hasChild(1))callChild(1);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_times_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_times_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0))callChild(0);
     if(hasChild(1))callChild(1);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_divide_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_divide_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0))callChild(0);
     if(hasChild(1))callChild(1);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_pow_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_pow_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0))callChild(0);
     if(hasChild(1))callChild(1);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_uminus_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_uminus_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0))callChild(0);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_stmt_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_stmt_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0)) callChild(0);
     if(hasChild(1)) callChild(1);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_stmtlist_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_stmtlist_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0)) callChild(0);
     if(hasChild(1)) callChild(1);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_fnassign_(nodeType * node, action_t act, type_t curr){
-    return typeNone;
+ta_ret_t ta_fnassign_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
 
-type_t ta_fncall_(nodeType * node, action_t act, type_t curr){
-    return typeNone;
+ta_ret_t ta_fncall_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
 
-type_t ta_indexed_(nodeType * node, action_t act, type_t curr){
-    return typeNone;
+ta_ret_t ta_indexed_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_formallist_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_formallist_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0)) callChild(0);
     if(hasChild(1)) callChild(1);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_actuallist_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_actuallist_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0)) callChild(0);
     if(hasChild(1)) callChild(1);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_labellist_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_labellist_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0)) callChild(0);
     if(hasChild(1)) callChild(1);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_fmtlist_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_fmtlist_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0)) callChild(0);
     if(hasChild(1)) callChild(1);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_loclist_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_loclist_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0)) callChild(0);
     if(hasChild(1)) callChild(1);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_dimlist_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_dimlist_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0)) callChild(0);
     if(hasChild(1)) callChild(1);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
-type_t ta_explist_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_explist_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(hasChild(0)) callChild(0);
     if(hasChild(1)) callChild(1);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
 
-type_t ta_main_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_main_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     callChild(0);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
 
-type_t ta_program_(nodeType * node, action_t act, type_t curr){
+ta_ret_t ta_program_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     callChild(0);
-    return typeNone;
+    ta_ret_t r = {.t = typeNone};
+    return r;
 }
 
 void typeanalysis(){
-    ta_program_(yyrootptr,setCastType,typeNone);
+    ta_program_(yyrootptr,setCastType,typeNone,NULL);
 }

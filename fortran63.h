@@ -81,4 +81,5 @@ struct LeafNode {
 extern FILE * IN_FILE;
 void setInput(FILE * in);
 void printErrorLine(int lineno, int charno);
+void error(nodeType * node, char * msg);
 #endif
