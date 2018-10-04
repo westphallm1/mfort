@@ -11,7 +11,7 @@
 #include <stdlib.h>
 
 typedef enum{setCastType, setSymToCheck, checkArgType} ta_action_t;
-typedef union ta_return_value {
+typedef struct ta_return_value {
     type_t t;
     sym *  s;
 } ta_ret_t;
@@ -141,7 +141,7 @@ ta_ret_t (*ta_jmptable[])(nodeType *,ta_action_t,type_t,sym *) = {
 
 ta_ret_t ta_intlit_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(curr == typeFloat && act == setCastType)
-        node -> castTo = curr;
+        node -> castTo = typeFloat;
     ta_ret_t r = {.t = typeNone};
     return r;
 }
@@ -156,21 +156,25 @@ ta_ret_t ta_tag_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     ta_ret_t r = {.t = typeNone};
     return r;
 }
+
 ta_ret_t ta_intid_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(curr == typeFloat && act == setCastType)
-        node -> castTo = curr;
+        node -> castTo = typeFloat;
     if(act == setSymToCheck){
-        ta_ret_t r = {.s = getLocal(TABLE,nodeName())};
+        ta_ret_t r = {.s = getLocal(TABLE,nodeName()),
+                      .t = typeInt};
         return r;
     }
     ta_ret_t r = {.t = typeNone};
     return r;
 }
+
 ta_ret_t ta_floatid_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     if(curr == typeInt && act == setCastType)
         error(node,"Can't cast float to int.");
     if(act == setSymToCheck){
-        ta_ret_t r = {.s = getLocal(TABLE,nodeName())};
+        ta_ret_t r = {.s = getLocal(TABLE,nodeName()),
+                      .t = typeFloat};
         return r;
     }
     ta_ret_t r = {.t = typeNone};
@@ -215,10 +219,15 @@ ta_ret_t ta_holfmtlit_(nodeType * node, ta_action_t act, type_t curr, sym * s_cu
 
 ta_ret_t ta_assign_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
     curr = typeNone;
-    act = setCastType;
+    act = setSymToCheck;
     //set the cast type to the LHS of the assign
-    if(hasChild(0)) curr = callChild(0).t;
-    //cast everything on the RHS 
+    if(hasChild(0)){
+        ta_ret_t cast = callChild(0);
+        curr = cast.t;
+        s_curr = cast.s;
+    }
+    //cast everything on the RHS, checking for errors 
+    act = setCastType;
     if(hasChild(1)) callChild(1);
     ta_ret_t r = {.t = typeNone};
     return r;
@@ -403,6 +412,9 @@ ta_ret_t ta_fncall_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr)
 }
 
 ta_ret_t ta_indexed_(nodeType * node, ta_action_t act, type_t curr, sym * s_curr){
+    if(act == setCastType){
+        callChild(0);
+    }
     ta_ret_t r = {.t = typeNone};
     return r;
 }
